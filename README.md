@@ -46,12 +46,14 @@ devtools::install_github("FangZY-Lab/MetaScreener")
 # Load the package
 library(MetaScreener)
 # Load example data for DiffMetaScreener mode
+# The data is available for download in the 'data' directory of the FangZY-Lab/MetaScreener repository on GitHub
 load("example_diffdata.Rdata")
 load("example_diffdata_G.Rdata")
 load("example_diffgroup.Rdata")
 load("example_geneset.Rdata")
 
 # Load example data for CorMetaScreener mode
+# The data is available for download in the 'data' directory of the FangZY-Lab/MetaScreener repository on GitHub
 load("example_cordata.Rdata")
 load("example_cordata_V.Rdata")
 # Assign loaded data to variables
