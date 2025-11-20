@@ -41,7 +41,7 @@ for(i in 1:length(depens)){
 }
 
 # Install MetaScreener from GitHub
-devtools::install_github("FangZY-Lab/MetaScreener")
+devtools::install_github("FangZY-Lab/MetaScreener", force = TRUE)
 
 # Load the package
 library(MetaScreener)
