@@ -2,31 +2,32 @@
 
 ## Overview
 
-**MetaScreener: A Robust Dual-Mode Framework for Directional Prioritization of Actionable Signatures Through Multi-Dataset and Multi-Approach Integration**
+**MetaScreener: a robust dual-mode framework for directional prioritization of actionable signatures through multi-dataset and multi-approach integration**
 
-MetaScreener represents a paradigm shift in gene set enrichment analysis by introducing a sophisticated multi-layer meta-analysis framework that transcends traditional single-dataset, single-method approaches. The package's groundbreaking architecture enables:
+MetaScreener is an R package that addresses the challenges of directionality in gene set enrichment analysis by implementing a multi-dataset, multi-method integration approach. The framework systematically combines evidence across multiple studies and analytical methods to identify directional gene set signatures.
 
-**Core Innovation: DiffMetaScreener**
-A revolutionary differential enrichment analysis engine that performs directional signature screening through:
-- **Multi-method agnostic integration**: Simultaneously employs 60+ enrichment methodologies spanning gene set scoring, network inference, and pathway enrichment approaches
-- **Directional p-value transformation**: Converts conventional two-tailed p-values into activation-specific and inhibition-specific evidence metrics
-- **Hierarchical meta-analysis**: Executes two-tiered evidence integration across both methodological and dataset dimensions
-- **Dual directional indices**: Generates Activation Direction Index (ADI) and Inhibition Direction Index (IDI) for unambiguous biological interpretation
+**DiffMetaScreener: Differential Enrichment Analysis Module**
+A comprehensive differential analysis tool that evaluates gene set activities between biological conditions through:
+- **Multi-method integration**: Combines results from established enrichment methods including GSVA, ssGSEA, PLAGE, zscore, AUCell, UCell, singscore, and network-based approaches from decoupleR
+- **Directional assessment**: Converts standard p-values into directional evidence using two-tailed to one-tailed transformation
+- **Hierarchical evidence synthesis**: Integrates p-values across methodological approaches and independent datasets
+- **Consensus scoring**: Computes Activation Direction Index (ADI) and Inhibition Direction Index (IDI) to quantify directional evidence
 
-**Core Innovation: CorMetaScreener**
-A transformative correlation-based enrichment engine that extends directional signature discovery to continuous phenotypes through:
-- **Multi-approach consensus integration**: Leverages diverse correlation methodologies to ensure comprehensive coverage of gene set associations
-- **Robustness-optimized transformation**: Converts correlation statistics into reliability-weighted evidence metrics
-- **Stratified meta-analysis**: Performs systematic evidence synthesis across both methodological and cohort dimensions
-- **Unified association indices**: Generates Consistent Correlation Index (CCI) and Robust Association Score (RAS) for reliable phenotypic insights
+**CorMetaScreener: Correlative Enrichment Analysis Module** 
+A correlation-based evaluation tool that assesses gene set associations with continuous phenotypes through:
+- **Multi-approach correlation analysis**: Integrates various correlation methodologies and enrichment scoring techniques
+- **Cross-validation framework**: Leverages multiple datasets to validate association consistency
+- **Stratified evidence integration**: Combines correlation evidence across different methodological approaches
+- **Association metrics**: Generates quantitative scores to rank gene sets by association strength
 
-**Transformative Capabilities:**
-- Robust cross-study signature validation through methodological consensus building
-- Elimination of single-method bias via multi-dimensional evidence aggregation
-- Directional pathway activity quantification beyond conventional differential expression
-- Scalable framework accommodating diverse experimental designs and multi-omics platforms
+**Framework Features:**
+- Evidence aggregation across multiple independent datasets
+- Integration of diverse enrichment methodologies
+- Quantitative assessment of directional gene set activities
+- Support for standard gene set formats and expression data types
+- Flexible statistical testing options including parametric and non-parametric methods
 
-MetaScreener moves beyond conventional enrichment analysis by providing a systematic, evidence-based framework for discovering and validating directional gene set signatures across complex biological landscapes.
+MetaScreener provides a systematic approach for evaluating gene set enrichment patterns by integrating evidence across datasets and methods, offering improved reliability compared to single-dataset analyses.
 
 ## Installation
 
