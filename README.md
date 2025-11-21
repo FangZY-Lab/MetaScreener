@@ -2,7 +2,7 @@
 
 ## Overview
 
-**MetaScreener: a robust dual-mode framework for directional prioritization of actionable signatures through multi-dataset and multi-approach integration**
+**MetaScreener: A Robust Dual-Mode Framework for Directional Prioritization of Actionable Signatures Through Multi-Dataset and Multi-Approach Integration**
 
 MetaScreener represents a paradigm shift in gene set enrichment analysis by introducing a sophisticated multi-layer meta-analysis framework that transcends traditional single-dataset, single-method approaches. The package's groundbreaking architecture enables:
 
@@ -13,16 +13,20 @@ A revolutionary differential enrichment analysis engine that performs directiona
 - **Hierarchical meta-analysis**: Executes two-tiered evidence integration across both methodological and dataset dimensions
 - **Dual directional indices**: Generates Activation Direction Index (ADI) and Inhibition Direction Index (IDI) for unambiguous biological interpretation
 
-**Secondary Mode: CorMetaScreener**
-A correlation-based enrichment module that extends the multi-layer meta-analysis principle to continuous phenotypic associations.
+**Core Innovation: CorMetaScreener**
+A transformative correlation-based enrichment engine that extends directional signature discovery to continuous phenotypes through:
+- **Multi-approach consensus integration**: Leverages diverse correlation methodologies to ensure comprehensive coverage of gene set associations
+- **Robustness-optimized transformation**: Converts correlation statistics into reliability-weighted evidence metrics
+- **Stratified meta-analysis**: Performs systematic evidence synthesis across both methodological and cohort dimensions
+- **Unified association indices**: Generates Consistent Correlation Index (CCI) and Robust Association Score (RAS) for reliable phenotypic insights
 
 **Transformative Capabilities:**
-- Robust cross-study signature validation through methodological consensus
-- Elimination of single-method bias via evidence aggregation
+- Robust cross-study signature validation through methodological consensus building
+- Elimination of single-method bias via multi-dimensional evidence aggregation
 - Directional pathway activity quantification beyond conventional differential expression
-- Scalable framework accommodating diverse experimental designs and technological platforms
+- Scalable framework accommodating diverse experimental designs and multi-omics platforms
 
-MetaScreener moves beyond conventional enrichment analysis by providing a systematic, evidence-based framework for discovering and validating directional gene set signatures across complex multi-omics landscapes.
+MetaScreener moves beyond conventional enrichment analysis by providing a systematic, evidence-based framework for discovering and validating directional gene set signatures across complex biological landscapes.
 
 ## Installation
 
