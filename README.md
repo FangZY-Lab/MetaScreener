@@ -2,7 +2,7 @@
 
 ## Overview
 
-**MetaScreener: An Innovative Multi-Layer Meta-Analysis Framework for Directional Gene Set Signature Discovery**
+**MetaScreener: a robust dual-mode framework for directional prioritization of actionable signatures through multi-dataset and multi-approach integration**
 
 MetaScreener represents a paradigm shift in gene set enrichment analysis by introducing a sophisticated multi-layer meta-analysis framework that transcends traditional single-dataset, single-method approaches. The package's groundbreaking architecture enables:
 
