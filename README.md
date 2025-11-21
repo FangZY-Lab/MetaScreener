@@ -2,12 +2,27 @@
 
 ## Overview
 
-MetaScreener is an R package for comprehensive gene set enrichment analysis across multiple datasets. It provides two main analysis modes:
+**MetaScreener: An Innovative Multi-Layer Meta-Analysis Framework for Directional Gene Set Signature Discovery**
 
-- **DiffMetaScreener**: Differential enrichment analysis between sample groups
-- **CorMetaScreener**: Correlation-based enrichment analysis
+MetaScreener represents a paradigm shift in gene set enrichment analysis by introducing a sophisticated multi-layer meta-analysis framework that transcends traditional single-dataset, single-method approaches. The package's groundbreaking architecture enables:
 
-The package integrates multiple enrichment methods and statistical approaches for robust meta-analysis of gene set activities.
+**Core Innovation: DiffMetaScreener**
+A revolutionary differential enrichment analysis engine that performs directional signature screening through:
+- **Multi-method agnostic integration**: Simultaneously employs 60+ enrichment methodologies spanning gene set scoring, network inference, and pathway enrichment approaches
+- **Directional p-value transformation**: Converts conventional two-tailed p-values into activation-specific and inhibition-specific evidence metrics
+- **Hierarchical meta-analysis**: Executes two-tiered evidence integration across both methodological and dataset dimensions
+- **Dual directional indices**: Generates Activation Direction Index (ADI) and Inhibition Direction Index (IDI) for unambiguous biological interpretation
+
+**Secondary Mode: CorMetaScreener**
+A correlation-based enrichment module that extends the multi-layer meta-analysis principle to continuous phenotypic associations.
+
+**Transformative Capabilities:**
+- Robust cross-study signature validation through methodological consensus
+- Elimination of single-method bias via evidence aggregation
+- Directional pathway activity quantification beyond conventional differential expression
+- Scalable framework accommodating diverse experimental designs and technological platforms
+
+MetaScreener moves beyond conventional enrichment analysis by providing a systematic, evidence-based framework for discovering and validating directional gene set signatures across complex multi-omics landscapes.
 
 ## Installation
 
