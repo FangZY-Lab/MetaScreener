@@ -2,7 +2,7 @@
 
 ## Overview
 
-**MetaScreener: a robust dual-mode framework for directional prioritization of actionable signatures through multi-dataset and multi-approach integration**
+**MetaScreener: A Robust Dual-Mode Framework for Directional Prioritization of Actionable Signatures Through Multi-Dataset and Multi-Approach Integration**
 
 MetaScreener is an R package that addresses the challenges of directionality in gene set enrichment analysis by implementing a multi-dataset, multi-method integration approach. The framework systematically combines evidence across multiple studies and analytical methods to identify directional gene set signatures.
 
