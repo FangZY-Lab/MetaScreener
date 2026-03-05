@@ -61,7 +61,7 @@ library(MetaScreener)
 ```r
 # Set working directory to your data location
 setwd("path/to/your/data")
-
+#The sample data download site is: https://github.com/FangZY-Lab/MetaScreener/tree/main/data
 # Load DiffMetaScreener example data
 load("diffGSE33113.Rdata")
 load("diffGSE33113_G.Rdata")
