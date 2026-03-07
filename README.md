@@ -196,8 +196,8 @@ The result is a data frame with three columns:
 ```r
 > head(result_WNT_DiffMetaScreener)
     signatures       ADI        IDI
-1 WNT_signature  2.345678  -1.234567
-2 WNT_target     1.876543  -0.987654
+1 WNT_signature1  2.345678  -1.234567
+2 WNT_signature1  1.876543  -0.987654
 3 ...            ...        ...
 ```
 
