@@ -211,7 +211,7 @@ Higher absolute values indicate stronger and more consistent directional signals
 
 If you use MetaScreener in your research, please cite:
 
-Zhao D, et al. MetaScreener: A multi-level meta-analysis framework for robust screening of directional signatures based on difference and correlation analyses. [Journal/Preprint information]
+Zhao D, et al. MetaScreener: a robust dual-mode framework for directional prioritization of actionable signatures through multi-dataset and multi-approach integration. [Under Review]
 
 ## Author
 
