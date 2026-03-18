@@ -211,7 +211,7 @@ Higher absolute values indicate stronger and more consistent directional signals
 
 If you use MetaScreener in your research, please cite:
 
-Zhao D, et al. MetaScreener: a robust dual-mode framework for directional prioritization of actionable signatures through multi-dataset and multi-approach integration. [Under Review]
+Zhao, D., Zhao, G., Yao, M. et al. MetaScreener: a robust dual-mode framework for directional prioritization of actionable signatures through multi-dataset and multi-approach integration. J Transl Med (2026). https://doi.org/10.1186/s12967-026-08019-y
 
 ## Author
 
