@@ -1,4 +1,4 @@
-# MetaScreener: A Multi-Level Meta-Analysis Framework for Directional Signature Screening
+# MetaScreener: a robust dual-mode framework for directional prioritization of actionable signatures through multi-dataset and multi-approach integration
 
 ## Overview
 
