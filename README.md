@@ -220,4 +220,4 @@ Dingkang Zhao (dingkang.25@intl.zju.edu.cn)
 
 ## License
 
-This package is distributed under the terms specified in the package description.
+This package is distributed under the terms specified in the package description. This software package is licensed under the most permissive open-source licence, the core feature of which is to grant users the utmost freedom: it permits the use of the code for any purpose, including modification, the creation of derivative works, and closed-source commercial applications, and the code itself is not ‘contagious’. The sole mandatory obligation is to retain the original author’s copyright notice and disclaimer when distributing the work.
