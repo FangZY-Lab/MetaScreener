@@ -27,7 +27,7 @@ depens = c("singscore","UCell","decoupleR","AUCell","metap",
            "GSA","coin","viper","caret","wdm","correlation")
 
 # Install IOBR from GitHub
-devtools::install_github("IOBR/IOBR")
+devtools::install_github("IOBR/IOBR", force = T)
 
 # Install Bioconductor packages
 for(i in 1:length(depens)){
