@@ -11,13 +11,14 @@ Description: Quantifies the direction of gene-set activity rather than only
     scoring methods (GSVA, ssGSEA, z-score, PLAGE, PCA, AUCell, UCell,
     singscore, MEDIAN, FGSEA, ORA, UDT, ULM, VIPER and weighted variants),
     tests the resulting scores with parametric, non-parametric and resampling
-    statistics, converts the two-sided p-values into one-sided activation and
-    inhibition evidence according to the sign of the effect, and combines that
-    evidence across methods and across datasets with twelve p-value
-    combination strategies. The output is an Activation Direction Index (ADI)
-    and an Inhibition Direction Index (IDI) per signature, so that signatures
-    can be ranked by how consistently, and in which direction, they respond to
-    a phenotype.
+    statistics, converts the two-tailed p-values into one-sided activation and
+    inhibition evidence, combines that evidence across enrichment approaches
+    within each dataset with twelve meta-analysis algorithms and across
+    datasets by geometric mean, and reports an Activation Direction Index
+    (ADI) and an Inhibition Direction Index (IDI) per signature. The two
+    indices are transformed -log10 and log10 p-values, always positive and
+    always negative respectively, and their sum is the net directionality
+    index used for ranking.
 License: MIT + file LICENSE
 URL: https://github.com/FangZY-Lab/MetaScreener
 BugReports: https://github.com/FangZY-Lab/MetaScreener/issues

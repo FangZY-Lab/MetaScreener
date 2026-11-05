@@ -11,6 +11,24 @@
   directions are kept apart, what the indices mean, the method space) rather
   than around a list of function calls.
 
+## Documentation now follows the publication word for word
+
+The method description was checked against the paper (Zhao *et al.*,
+*J Transl Med* 2026;24:583) and three statements were corrected:
+
+* the twelve meta-analysis algorithms are applied **within a dataset only**; the
+  cross-dataset step always uses the geometric mean. The README previously said
+  the twelve were applied at both levels.
+* ADI and IDI are means of −log₁₀ and log₁₀ combined p-values, not of
+  log-transformed evidence in general.
+* the net directionality index `DI = ADI + IDI` was missing from the README, the
+  tutorial and the workflow figure; it is now documented and used for ranking.
+
+The figure was redrawn with the paper's numbering (Steps 1-3 of the framework,
+then evaluation and application) and the paper's counts: 23 enrichment methods
+(21 unsupervised + 2 supervised), 138 differential and 230 correlative
+enrichment pipelines, 368 functional profiling strategies.
+
 ## Bug fixes
 
 * The two exported functions call `library()` on 24 packages but only 15 were

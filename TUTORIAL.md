@@ -144,8 +144,16 @@ Three columns:
 | Column | Meaning |
 | --- | --- |
 | `signatures` | the name of the gene set |
-| `ADI` | **A**ctivation **D**irection **I**ndex — evidence that the signature goes *up* in the activation group |
-| `IDI` | **I**nhibition **D**irection **I**ndex — evidence that it goes *down* |
+| `ADI` | **A**ctivation **D**irection **I**ndex — mean of −log₁₀ of the combined activation p-values, so always positive |
+| `IDI` | **I**nhibition **D**irection **I**ndex — mean of log₁₀ of the combined inhibition p-values, so always negative |
+
+The paper also defines the net directionality index, `DI = ADI + IDI`, which is
+what ranking should use. The functions return `ADI` and `IDI`; add the column
+yourself:
+
+```r
+res$DI <- res$ADI + res$IDI
+```
 
 How to read a row:
 
@@ -153,14 +161,17 @@ How to read a row:
   `FLIER_WNT` (ADI 18.7) is the clearest example.
 - **ADI near zero, large negative IDI** → consistently inhibited.
   `FEVR_WNT_DN` (IDI −8.9) is the clearest example.
+- **ADI and IDI both substantial, opposite signs** → context-dependent; the sign
+  of `DI` tells you which direction wins overall.
 - **both near zero** → no consistent direction; drop it or look again with more
   datasets.
 
 To rank:
 
 ```r
-res[order(-res$ADI), ]                    # strongest activation first
-res[order(res$IDI), ]                     # strongest inhibition first
+res[order(-res$DI), ]                     # net activation first
+res[order(-res$ADI), ]                    # strongest activation evidence
+res[order(res$IDI), ]                     # strongest inhibition evidence
 ```
 
 ---
@@ -249,8 +260,10 @@ Tests for `DiffMetaScreener`: `t`, `limma`, `anova`, `wilcoxon`, `permutation`,
 `kruskal`. For `CorMetaScreener`: `pearson`, `spearman`, `kendall`, `lm`,
 `biweight`, `distance`, `percentage`, `blomqvist`, `hoeffding`, `gamma`.
 
-**`p_combine_method`** — how p-values are merged, first across methods and then
-across datasets. Leave it at the default (all twelve).
+**`p_combine_method`** — how p-values are merged across the enrichment methods
+**within each dataset** (twelve meta-analysis algorithms from `metap` plus CCT
+and the geometric mean). The cross-dataset step is fixed: it always uses the
+geometric mean. Leave this at the default (all twelve).
 
 > **Do not** narrow it to `c("meanp", "meanz")` with few methods and few
 > datasets. Both need at least four valid p-values at *each* combining step;
