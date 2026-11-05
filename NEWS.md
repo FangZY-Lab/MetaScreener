@@ -18,4 +18,10 @@
   LFS rules in `.gitattributes`, and expanded `.gitignore` and `.Rbuildignore`.
 * README rewritten around the `data()` workflow.
 
+## Documentation
+
+* The README now records that `meanp` and `meanz` need at least four valid
+  p-values at both combining steps. Passing one of them with few methods and
+  few datasets silently flattens ADI and IDI to zero.
+
 No analysis code changed.

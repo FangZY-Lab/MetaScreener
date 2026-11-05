@@ -79,12 +79,14 @@ result_diff <- DiffMetaScreener(
                         "ssgsea_t", "ssgsea_wilcoxon",
                         "zscore_t", "zscore_wilcoxon"),
   min.sz = 2,
-  max.sz = 10000,
-  p_combine_method = c("meanp", "meanz", "sumlog", "sumz", "sump")
+  max.sz = 10000
 )
 
 head(result_diff)
 ```
+
+Leaving `p_combine_method` at its default matters — see
+[Choosing the p-value combination](#choosing-the-p-value-combination).
 
 ### Mode 2 — correlation analysis
 
@@ -102,8 +104,7 @@ result_cor <- CorMetaScreener(
                         "ssgsea_pearson", "ssgsea_spearman",
                         "zscore_pearson", "zscore_spearman"),
   min.sz = 2,
-  max.sz = 10000,
-  p_combine_method = c("meanp", "meanz", "sumlog", "sumz", "sump")
+  max.sz = 10000
 )
 
 head(result_cor)
@@ -137,14 +138,45 @@ without duplicates, and the gene sets must use the same identifier type.
 `GeneSetCollection` objects can be read with `GSEABase::getGmt()` from a GMT
 file, which is the usual starting point for your own signatures.
 
+## Choosing the p-value combination
+
+`p_combine_method` defaults to all twelve strategies (`geometric_mean`, `invt`,
+`invchisq`, `logitp`, `cct`, `meanp`, `meanz`, `sumlog`, `sumz`, `sump`,
+`votep`, `wilkinsonp`) and the reported ADI/IDI are the mean across them. That
+default is the safe choice, and it is what the examples above use.
+
+If you narrow the list, watch the sample size. `meanp` and `meanz` (from
+`metap`) need **at least four valid p-values**, and they are applied twice:
+
+1. across the enrichment methods, within one dataset;
+2. across the datasets.
+
+Passing, say, only `p_combine_method = "meanp"` with two methods and three
+datasets gives two p-values at step 1, `meanp` returns `NA`, and the pipeline
+substitutes **1** for it. The score then collapses to exactly zero for every
+signature, which looks like "no signal" rather than like an error:
+
+```text
+     signatures ADI IDI
+1  BIOCARTA_WNT   0   0
+...
+```
+
+Either keep the default, or pick strategies that tolerate small k (`sumlog`,
+`sumz`, `sump`, `invt`, `logitp`, `cct`), or make sure both the number of
+methods and the number of datasets reach four.
+
 ## Output
 
 Both functions return a data frame with one row per signature:
 
 ```text
-  signatures        ADI        IDI
-1 WNT_signature1   2.345678  -1.234567
-2 WNT_signature2   1.876543  -0.987654
+     signatures         ADI           IDI
+1  BIOCARTA_WNT 12.01998509 -2.179156e-02
+2   FEVR_WNT_DN  0.01452660 -8.911991e+00
+3   FEVR_WNT_UP  5.30784588 -3.516706e-02
+4     FLIER_WNT 18.74944260 -6.136770e-06
+...
 ```
 
 - `ADI` — evidence that the signature is activated (higher is stronger);
