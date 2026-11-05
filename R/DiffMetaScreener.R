@@ -7,8 +7,30 @@
 #' @param max.sz The genesets contain the maximum number of genes, where the default parameter is 10000.
 #' @param p_combine_method The choice of method for integrating p-values.
 #' @author Dingkang Zhao
+#' @return A data frame with one row per gene set and three columns:
+#'   \code{signatures}, the gene set name; \code{ADI}, the activation
+#'   direction index; and \code{IDI}, the inhibition direction index.
+#'   Both indices average the directional evidence over the requested
+#'   \code{p_combine_method} strategies, so a larger value means stronger
+#'   and more consistent evidence in that direction.
 #' @examples
-#' @return
+#' \dontrun{
+#' data(example_geneset)
+#' data(example_diffgroup)
+#' data(list = c("diffGSE33113", "diffGSE33113_G",
+#'               "diffGSE35896", "diffGSE35896_G",
+#'               "diffGSE13067", "diffGSE13067_G"))
+#'
+#' res <- DiffMetaScreener(
+#'   expression_accession_vector = c("diffGSE33113", "diffGSE35896", "diffGSE13067"),
+#'   comparisons                 = example_diffgroup,
+#'   geneSets_gmt                = example_geneset,
+#'   enrichment_method           = c("zscore_t", "zscore_wilcoxon"),
+#'   min.sz = 2,
+#'   max.sz = 10000
+#' )
+#' res
+#' }
 #' @export
 DiffMetaScreener=function(expression_accession_vector,
                       comparisons,
@@ -43,6 +65,43 @@ DiffMetaScreener=function(expression_accession_vector,
                                           "meanp","meanz","sumlog","sumz",
                                           "sump","votep","wilkinsonp")
 ){
+  ## ---- input checks ----------------------------------------------------
+  if (!is.character(expression_accession_vector) || !length(expression_accession_vector)) {
+    stop("`expression_accession_vector` must be a non-empty character vector.", call. = FALSE)
+  }
+  aux_suffix <- "_G"
+  absent <- expression_accession_vector[
+    !vapply(expression_accession_vector, function(x) exists(x, mode = "any"), logical(1)) |
+    !vapply(paste0(expression_accession_vector, aux_suffix), function(x) exists(x, mode = "any"), logical(1))
+  ]
+  if (length(absent)) {
+    stop("Missing objects for: ", paste(absent, collapse = ", "),
+         ". Each dataset needs `<name>` and `<name>", aux_suffix,
+         "`; load them with data() or load() first.", call. = FALSE)
+  }
+  invisible(lapply(expression_accession_vector, function(x) {
+    aux <- get(paste0(x, aux_suffix))
+    if (!all(c("Tag", "group") %in% names(aux))) {
+      stop("`", x, aux_suffix, "` must have the columns ",
+           "`Tag` and `group`.", call. = FALSE)
+    }
+    if (!setequal(aux$Tag, colnames(get(x)))) {
+      stop("`", x, aux_suffix, "`$Tag and colnames(`", x,
+           "`) do not contain the same samples.", call. = FALSE)
+    }
+    invisible(NULL)
+  }))
+  if (any(c("meanp", "meanz") %in% p_combine_method) &&
+      (length(enrichment_method) < 4 || length(expression_accession_vector) < 4)) {
+    warning("`meanp` and `meanz` need at least four valid p-values at both combination ",
+            "steps (across methods inside a dataset, then across datasets). With ",
+            length(enrichment_method), " enrichment method(s) and ",
+            length(expression_accession_vector), " dataset(s) they cannot be applied and ",
+            "their contribution is replaced by 1, which pulls ADI and IDI towards zero. ",
+            "Keep the full default `p_combine_method`, or use a strategy that tolerates ",
+            "small k.", call. = FALSE)
+  }
+
   print("Start loading R packages.")
   library(singscore)
   library(UCell)
@@ -60,7 +119,6 @@ DiffMetaScreener=function(expression_accession_vector,
   library(limma)
   library(dplyr)
   library(tidyverse)
-  library(devtools)
   library(stringr)
   library(GSA)
   library(coin)

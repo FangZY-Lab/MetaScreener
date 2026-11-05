@@ -5,3 +5,4 @@
 ^\.gitattributes$
 ^LICENSE\.md$
 ^README\.Rmd$
+^TUTORIAL\.md$

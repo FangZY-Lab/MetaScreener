@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1224" viewBox="0 0 1000 1224" font-family="Segoe UI, Helvetica Neue, Helvetica, Arial, sans-serif">
+<defs>
+<marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+<path d="M 0 0 L 10 5 L 0 10 z" fill="#8c959f"/></marker>
+<filter id="s" x="-4%" y="-6%" width="108%" height="114%"><feDropShadow dx="0" dy="1.5" stdDeviation="2" flood-color="#0b1b2b" flood-opacity="0.08"/></filter>
+</defs>
+<rect width="100%" height="100%" fill="#ffffff"/>
+<text x="50%" y="46" text-anchor="middle" font-size="24" font-weight="700" fill="#1f2328">MetaScreener: directional meta-analysis of gene-set activity</text>
+<text x="50%" y="76" text-anchor="middle" font-size="14" fill="#59636e">multi-dataset x multi-method evidence  →  two directional indices per signature</text>
+<g filter="url(#s)"><rect x="150" y="118" width="700" height="112" rx="12" fill="#ffffff" stroke="#d0d7de" stroke-width="1.4"/></g>
+<rect x="150" y="126" width="6" height="96" rx="3" fill="#57606a"/>
+<text x="176" y="150" font-size="17" font-weight="700" fill="#1f2328">1  Inputs</text>
+<text x="176" y="176" font-size="13.5" fill="#424a53">k independent cohorts: expression matrices (genes x samples, log2)</text>
+<text x="176" y="198" font-size="13.5" fill="#424a53">Phenotype: two-group labels (Diff) or a continuous score (Cor)</text>
+<text x="176" y="220" font-size="13.5" fill="#424a53">Signatures: a GeneSetCollection of candidate gene sets</text>
+<line x1="500" y1="234" x2="500" y2="264" stroke="#8c959f" stroke-width="1.6" marker-end="url(#a)"/>
+<g filter="url(#s)"><rect x="150" y="270" width="700" height="112" rx="12" fill="#ffffff" stroke="#d0d7de" stroke-width="1.4"/></g>
+<rect x="150" y="278" width="6" height="96" rx="3" fill="#0969da"/>
+<text x="176" y="302" font-size="17" font-weight="700" fill="#1f2328">2  Quantify activity, per signature, per dataset</text>
+<text x="176" y="328" font-size="13.5" fill="#424a53">GSVA  ·  ssGSEA  ·  z-score  ·  PLAGE  ·  PCA  ·  AUCell  ·  UCell  ·  singscore</text>
+<text x="176" y="350" font-size="13.5" fill="#424a53">MEDIAN  ·  FGSEA  ·  ORA  ·  consensus  ·  UDT  ·  ULM  ·  VIPER  ·  WMEAN</text>
+<text x="176" y="372" font-size="13.5" fill="#424a53">each method yields one activity value per sample</text>
+<line x1="500" y1="386" x2="500" y2="416" stroke="#8c959f" stroke-width="1.6" marker-end="url(#a)"/>
+<g filter="url(#s)"><rect x="150" y="422" width="700" height="112" rx="12" fill="#ffffff" stroke="#d0d7de" stroke-width="1.4"/></g>
+<rect x="150" y="430" width="6" height="96" rx="3" fill="#0969da"/>
+<text x="176" y="454" font-size="17" font-weight="700" fill="#1f2328">3  Test activity, per dataset</text>
+<text x="176" y="480" font-size="13.5" fill="#424a53">Diff:  t  ·  limma  ·  ANOVA  ·  Wilcoxon  ·  permutation  ·  Kruskal-Wallis</text>
+<text x="176" y="502" font-size="13.5" fill="#424a53">Cor:   Pearson  ·  Spearman  ·  Kendall  ·  linear model  ·  biweight</text>
+<text x="176" y="524" font-size="13.5" fill="#424a53">        distance  ·  percentage  ·  Blomqvist  ·  Hoeffding  ·  gamma</text>
+<line x1="500" y1="538" x2="500" y2="568" stroke="#8c959f" stroke-width="1.6" marker-end="url(#a)"/>
+<g filter="url(#s)"><rect x="150" y="574" width="700" height="90" rx="12" fill="#ffffff" stroke="#d0d7de" stroke-width="1.4"/></g>
+<rect x="150" y="582" width="6" height="74" rx="3" fill="#bf8700"/>
+<text x="176" y="606" font-size="17" font-weight="700" fill="#1f2328">4  Directionalise the evidence</text>
+<text x="176" y="632" font-size="13.5" fill="#424a53">two-sided p  →  P(activation)  and  P(inhibition)</text>
+<text x="176" y="654" font-size="13.5" fill="#424a53">sign of the effect decides which tail the evidence is assigned to</text>
+<line x1="500" y1="668" x2="500" y2="698" stroke="#8c959f" stroke-width="1.6" marker-end="url(#a)"/>
+<g filter="url(#s)"><rect x="150" y="704" width="700" height="90" rx="12" fill="#ffffff" stroke="#d0d7de" stroke-width="1.4"/></g>
+<rect x="150" y="712" width="6" height="74" rx="3" fill="#8250df"/>
+<text x="176" y="736" font-size="17" font-weight="700" fill="#1f2328">5  Combine within a dataset</text>
+<text x="176" y="762" font-size="13.5" fill="#424a53">12 p-value strategies:  geometric mean  ·  invt  ·  invchisq  ·  logit</text>
+<text x="176" y="784" font-size="13.5" fill="#424a53">CCT  ·  meanp  ·  meanz  ·  sumlog  ·  sumz  ·  sump  ·  votep  ·  Wilkinson</text>
+<line x1="500" y1="798" x2="500" y2="828" stroke="#8c959f" stroke-width="1.6" marker-end="url(#a)"/>
+<g filter="url(#s)"><rect x="150" y="834" width="700" height="90" rx="12" fill="#ffffff" stroke="#d0d7de" stroke-width="1.4"/></g>
+<rect x="150" y="842" width="6" height="74" rx="3" fill="#8250df"/>
+<text x="176" y="866" font-size="17" font-weight="700" fill="#1f2328">6  Combine across datasets</text>
+<text x="176" y="892" font-size="13.5" fill="#424a53">the same 12 strategies, now over the per-dataset evidence</text>
+<text x="176" y="914" font-size="13.5" fill="#424a53">transforms one dataset's result into a cohort-level meta-evidence</text>
+<line x1="500" y1="928" x2="500" y2="958" stroke="#8c959f" stroke-width="1.6" marker-end="url(#a)"/>
+<g filter="url(#s)"><rect x="150" y="964" width="700" height="90" rx="12" fill="#ffffff" stroke="#d0d7de" stroke-width="1.4"/></g>
+<rect x="150" y="972" width="6" height="74" rx="3" fill="#1a7f37"/>
+<text x="176" y="996" font-size="17" font-weight="700" fill="#1f2328">7  Directional indices</text>
+<text x="176" y="1022" font-size="13.5" fill="#424a53">ADI = mean over strategies of log10 combined activation evidence</text>
+<text x="176" y="1044" font-size="13.5" fill="#424a53">IDI = mean over strategies of log10 combined inhibition evidence</text>
+<line x1="500" y1="1058" x2="500" y2="1088" stroke="#8c959f" stroke-width="1.6" marker-end="url(#a)"/>
+<g filter="url(#s)"><rect x="150" y="1094" width="700" height="90" rx="12" fill="#ffffff" stroke="#d0d7de" stroke-width="1.4"/></g>
+<rect x="150" y="1102" width="6" height="74" rx="3" fill="#1a7f37"/>
+<text x="176" y="1126" font-size="17" font-weight="700" fill="#1f2328">8  Output</text>
+<text x="176" y="1152" font-size="13.5" fill="#424a53">one row per signature:  signatures  ·  ADI  ·  IDI</text>
+<text x="176" y="1174" font-size="13.5" fill="#424a53">rank by ADI for activation, by |IDI| for inhibition</text>
+<g opacity="0.95"><rect x="24" y="120" width="14" height="14" rx="3" fill="#0969da"/></g>
+<text x="44" y="132" font-size="12" fill="#59636e">scoring / testing</text>
+<g opacity="0.95"><rect x="24" y="148" width="14" height="14" rx="3" fill="#bf8700"/></g>
+<text x="44" y="160" font-size="12" fill="#59636e">direction</text>
+<g opacity="0.95"><rect x="24" y="176" width="14" height="14" rx="3" fill="#8250df"/></g>
+<text x="44" y="188" font-size="12" fill="#59636e">meta-analysis</text>
+<g opacity="0.95"><rect x="24" y="204" width="14" height="14" rx="3" fill="#1a7f37"/></g>
+<text x="44" y="216" font-size="12" fill="#59636e">readout</text>
+<text x="50%" y="1210" text-anchor="middle" font-size="12" fill="#8c959f">DiffMetaScreener(): two-group phenotype  ·  CorMetaScreener(): continuous phenotype</text>
+</svg>

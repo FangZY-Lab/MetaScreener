@@ -1,13 +1,23 @@
 Package: MetaScreener
 Type: Package
-Title: A dual-mode framework that robustly and quantitatively screens directional gene sets through multi-dataset and multi-approach integration
-Version: 1.0.1
+Title: Directional Meta-Analysis of Gene-Set Activity across Multiple Datasets
+    and Enrichment Methods
+Version: 1.1.0
 Authors@R: 
-    person("Dingkang", "Zhao", , "dingkang.22@intl.zju.edu.cn", role = c("aut", "cre"))
-Description: A dual-mode screening framework called MetaScreener (DiffMetaScreener
-    and CorMetaScreener), which can integrate multiple datasets and multiple
-    enrichment analyses while quantifying both the activation signal
-    directionality and inhibition signal directionality of gene sets.
+    person("Dingkang", "Zhao", , "dingkang.25@intl.zju.edu.cn", role = c("aut", "cre"))
+Description: Quantifies the direction of gene-set activity rather than only
+    testing whether an association exists. For every candidate signature the
+    package scores activity in each cohort with a panel of enrichment and
+    scoring methods (GSVA, ssGSEA, z-score, PLAGE, PCA, AUCell, UCell,
+    singscore, MEDIAN, FGSEA, ORA, UDT, ULM, VIPER and weighted variants),
+    tests the resulting scores with parametric, non-parametric and resampling
+    statistics, converts the two-sided p-values into one-sided activation and
+    inhibition evidence according to the sign of the effect, and combines that
+    evidence across methods and across datasets with twelve p-value
+    combination strategies. The output is an Activation Direction Index (ADI)
+    and an Inhibition Direction Index (IDI) per signature, so that signatures
+    can be ranked by how consistently, and in which direction, they respond to
+    a phenotype.
 License: MIT + file LICENSE
 URL: https://github.com/FangZY-Lab/MetaScreener
 BugReports: https://github.com/FangZY-Lab/MetaScreener/issues
@@ -17,11 +27,15 @@ Depends:
     R (>= 4.0)
 Imports: 
     AUCell,
+    caret,
     clusterProfiler,
+    coin,
+    correlation,
     decoupleR,
     doBy,
     dplyr,
     fgsea,
+    GSA,
     GSEABase,
     GSVA,
     IOBR,
@@ -30,6 +44,10 @@ Imports:
     plyr,
     reshape2,
     singscore,
-    UCell
+    stringr,
+    tidyverse,
+    UCell,
+    viper,
+    wdm
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.2
+Config/roxygen2/version: 8.1.1

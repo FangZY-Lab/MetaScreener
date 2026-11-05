@@ -1,213 +1,192 @@
 # MetaScreener
 
-**Directional, multi-dataset screening of gene signatures.**
+**Directional meta-analysis of gene-set activity across multiple datasets and
+independent enrichment methods.**
 
-MetaScreener takes a set of gene signatures and asks a single question of each
-one: across many independent datasets and many enrichment methods, is the
-signature consistently *activated* or consistently *inhibited*? It answers with
-two scores per signature — an **Activation Direction Index (ADI)** and an
-**Inhibition Direction Index (IDI)** — rather than a single p-value that hides
-the direction of the effect.
+[![License: MIT](https://img.shields.io/badge/license-MIT-1a7f37.svg)](LICENSE)
+[![R](https://img.shields.io/badge/R-%E2%89%A5%204.0-0969da.svg)](https://cran.r-project.org)
 
-Two modes share the same engine:
+Most signature-screening tools answer *whether* a gene set is associated with a
+phenotype. MetaScreener answers *in which direction*, and how consistently:
+each signature receives an **Activation Direction Index (ADI)** and an
+**Inhibition Direction Index (IDI)**, aggregated over many datasets and many
+enrichment methods, instead of a single p-value that hides the sign of the
+effect.
 
-| Mode | Input | Typical use |
-| --- | --- | --- |
-| `DiffMetaScreener()` | expression + a two-group annotation per dataset | case vs. control, subtype A vs. subtype B, high vs. low |
-| `CorMetaScreener()` | expression + a continuous variable per dataset | clinical score, drug sensitivity, pathway activity |
+![MetaScreener workflow](man/figures/MetaScreener-workflow.svg)
+
+## Why a directional index
+
+A conventional meta-analysis of gene sets collapses two questions into one. If a
+signature is strongly activated in half the cohorts and strongly inhibited in
+the other half, its combined p-value can look impressive while the biology is
+contradictory. MetaScreener keeps the two directions apart at every step:
+
+1. activity is quantified per sample with a panel of scoring methods;
+2. the group difference (or the association with a continuous variable) is
+   tested per dataset;
+3. each two-sided p-value is split into one-sided **activation** and
+   **inhibition** evidence, according to the sign of the effect;
+4. the evidence is combined across methods within a dataset, then across
+   datasets, with twelve p-value combination strategies;
+5. the mean of the log-transformed combined evidence becomes ADI and IDI.
+
+The result is a ranked, direction-aware shortlist: a signature with high ADI and
+near-zero IDI behaves as a consistent activation marker, one with high |IDI| and
+near-zero ADI as a consistent inhibition marker, and a signature with both large
+is context-dependent.
 
 ## Installation
 
-MetaScreener depends on several Bioconductor packages, and on `IOBR`, which is
-distributed through GitHub. Install those first:
-
 ```r
-if (!requireNamespace("BiocManager", quietly = TRUE)) {
-  install.packages("BiocManager")
-}
+if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager")
 install.packages("remotes")
 
-# IOBR is not on CRAN or Bioconductor
-remotes::install_github("IOBR/IOBR")
-
-BiocManager::install(c(
-  "GSVA", "GSEABase", "AUCell", "singscore", "UCell",
-  "decoupleR", "clusterProfiler", "limma", "fgsea"
-), update = FALSE)
-
+remotes::install_github("IOBR/IOBR")          # not on CRAN or Bioconductor
+BiocManager::install(c("GSVA", "GSEABase", "AUCell", "singscore", "UCell",
+                       "decoupleR", "clusterProfiler", "limma", "fgsea"),
+                     update = FALSE)
 install.packages(c("metap", "doBy", "dplyr", "plyr", "reshape2"))
-```
 
-Then install the package itself:
-
-```r
 remotes::install_github("FangZY-Lab/MetaScreener")
 library(MetaScreener)
 ```
 
-## Quick start
+The first installation takes 15–40 minutes because of the Bioconductor
+dependency stack. New to the package? Start with the
+**[step-by-step tutorial](TUTORIAL.md)**.
 
-The package ships with two complete example sets (three datasets each) and a
-ten-signature `GeneSetCollection`, so the workflow below runs as written.
+## Quick start
 
 ```r
 library(MetaScreener)
 
-# signatures and the comparison table
-data("example_geneset")     # GeneSetCollection, 10 signatures
-data("example_diffgroup")   # which groups to compare in each dataset
+data("example_geneset")      # 10 signatures
+data("example_diffgroup")    # per-dataset comparison table
+data(list = c("diffGSE33113", "diffGSE33113_G",
+              "diffGSE35896", "diffGSE35896_G",
+              "diffGSE13067", "diffGSE13067_G"))
 
-# Diff mode: three colorectal cohorts, CMS2 versus the rest
-data(list = c(
-  "diffGSE33113", "diffGSE33113_G",
-  "diffGSE35896", "diffGSE35896_G",
-  "diffGSE13067", "diffGSE13067_G"
-))
-```
-
-`data()` loads the objects into the global environment, which is where the
-screener looks for them.
-
-### Mode 1 — differential analysis
-
-```r
-result_diff <- DiffMetaScreener(
+res <- DiffMetaScreener(
   expression_accession_vector = c("diffGSE33113", "diffGSE35896", "diffGSE13067"),
   comparisons                 = example_diffgroup,
   geneSets_gmt                = example_geneset,
-  enrichment_method = c("gsva_t", "gsva_wilcoxon",
-                        "ssgsea_t", "ssgsea_wilcoxon",
-                        "zscore_t", "zscore_wilcoxon"),
+  enrichment_method           = c("zscore_t", "zscore_wilcoxon"),
   min.sz = 2,
   max.sz = 10000
 )
 
-head(result_diff)
+res[order(-res$ADI), ]
 ```
-
-Leaving `p_combine_method` at its default matters — see
-[Choosing the p-value combination](#choosing-the-p-value-combination).
-
-### Mode 2 — correlation analysis
-
-```r
-data(list = c(
-  "corGSE33113", "corGSE33113_V",
-  "corGSE35896", "corGSE35896_V",
-  "corGSE13067", "corGSE13067_V"
-))
-
-result_cor <- CorMetaScreener(
-  expression_accession_vector = c("corGSE33113", "corGSE35896", "corGSE13067"),
-  geneSets_gmt = example_geneset,
-  enrichment_method = c("gsva_pearson", "gsva_spearman",
-                        "ssgsea_pearson", "ssgsea_spearman",
-                        "zscore_pearson", "zscore_spearman"),
-  min.sz = 2,
-  max.sz = 10000
-)
-
-head(result_cor)
-```
-
-Both functions accept around a hundred `enrichment_method` values; the short
-lists above keep a first run quick. Run the full default set only when you are
-ready for a long job — every method is fitted in every dataset.
-
-## Input contract
-
-The screener reads objects from the **global environment**, by name. For each
-entry in `expression_accession_vector` the following must exist:
-
-| Object | Content |
-| --- | --- |
-| `<id>` | expression matrix, genes in rows, samples in columns, log2 scale |
-| `<id>_G` (Diff) | data frame with columns `Tag` (sample ID) and `group` |
-| `<id>_V` (Cor) | data frame with columns `Tag` (sample ID) and `value` |
-
-`Tag` must match `colnames(<id>)` exactly — same values, and the bundled data
-keeps the same order. Row names of the expression matrix must be gene symbols
-without duplicates, and the gene sets must use the same identifier type.
-
-`comparisons` is a data frame with one row per dataset:
-
-| Accession | Group1 | Group2 | Group1_Status | Group2_Status |
-| --- | --- | --- | --- | --- |
-| diffGSE33113 | CMS2 | Other | activation | inhibition |
-
-`GeneSetCollection` objects can be read with `GSEABase::getGmt()` from a GMT
-file, which is the usual starting point for your own signatures.
-
-## Choosing the p-value combination
-
-`p_combine_method` defaults to all twelve strategies (`geometric_mean`, `invt`,
-`invchisq`, `logitp`, `cct`, `meanp`, `meanz`, `sumlog`, `sumz`, `sump`,
-`votep`, `wilkinsonp`) and the reported ADI/IDI are the mean across them. That
-default is the safe choice, and it is what the examples above use.
-
-If you narrow the list, watch the sample size. `meanp` and `meanz` (from
-`metap`) need **at least four valid p-values**, and they are applied twice:
-
-1. across the enrichment methods, within one dataset;
-2. across the datasets.
-
-Passing, say, only `p_combine_method = "meanp"` with two methods and three
-datasets gives two p-values at step 1, `meanp` returns `NA`, and the pipeline
-substitutes **1** for it. The score then collapses to exactly zero for every
-signature, which looks like "no signal" rather than like an error:
-
-```text
-     signatures ADI IDI
-1  BIOCARTA_WNT   0   0
-...
-```
-
-Either keep the default, or pick strategies that tolerate small k (`sumlog`,
-`sumz`, `sump`, `invt`, `logitp`, `cct`), or make sure both the number of
-methods and the number of datasets reach four.
-
-## Output
-
-Both functions return a data frame with one row per signature:
 
 ```text
      signatures         ADI           IDI
-1  BIOCARTA_WNT 12.01998509 -2.179156e-02
-2   FEVR_WNT_DN  0.01452660 -8.911991e+00
-3   FEVR_WNT_UP  5.30784588 -3.516706e-02
 4     FLIER_WNT 18.74944260 -6.136770e-06
-...
+1  BIOCARTA_WNT 12.01998509 -2.179156e-02
+6  HALLMARK_WNT 11.14547430 -2.411874e-03
+10       WP_WNT  7.31220985 -3.819236e-02
+7      KEGG_WNT  6.16164280 -2.953711e-01
+3   FEVR_WNT_UP  5.30784588 -3.516706e-02
+9  REACTOME_WNT  1.23345962 -5.840720e-02
+5      GOBP_WNT  0.57010137 -1.005907e+00
+8       PID_WNT  0.09815316 -1.713012e+00
+2   FEVR_WNT_DN  0.01452660 -8.911991e+00
 ```
 
-- `ADI` — evidence that the signature is activated (higher is stronger);
-- `IDI` — evidence that it is inhibited;
-- a large positive ADI with a small |IDI| means the signature behaves as an
-  activation signature across datasets and methods, and vice versa.
+`FLIER_WNT` is activated across all three cohorts, `FEVR_WNT_DN` is inhibited
+(IDI −8.9 with an ADI near zero), and `PID_WNT` / `GOBP_WNT` carry both signs
+and are flagged as context-dependent.
+
+## The two modes
+
+| Mode | Function | Phenotype | Per-dataset test |
+| --- | --- | --- | --- |
+| differential | `DiffMetaScreener()` | two-group labels (`Tag`, `group`) | t, limma, ANOVA, Wilcoxon, permutation, Kruskal–Wallis |
+| correlation | `CorMetaScreener()` | continuous score (`Tag`, `value`) | Pearson, Spearman, Kendall, linear model, biweight, distance, percentage, Blomqvist, Hoeffding, gamma |
+
+## Method space
+
+| Layer | Options |
+| --- | --- |
+| scoring | GSVA, ssGSEA, z-score, PLAGE, PCA, AUCell, UCell, singscore, MEDIAN, FGSEA, ORA, consensus, MDT, MLM, UDT, ULM, VIPER, WMEAN, WSUM (plus normalised and correlation-weighted variants) |
+| p-value combination | geometric mean, inverse t, inverse chi-square, logit, Cauchy (CCT), meanp, meanz, sumlog, sumz, sump, votep, Wilkinson |
+| aggregation | mean of log₁₀ combined evidence across combination strategies |
+
+An `enrichment_method` value names a scoring family and a test, joined by an
+underscore: `gsva_wilcoxon`, `singscore_limma`, `aucell_permutation`,
+`zscore_pearson`. Roughly a hundred combinations are available per mode.
+
+> **Note on small k.** `meanp` and `meanz` require at least four valid p-values
+> at *both* combination steps. If you restrict `p_combine_method` to them while
+> using few methods or few datasets, they return `NA`, the pipeline substitutes
+> 1, and every ADI/IDI collapses to zero. The function warns when this is about
+> to happen; keeping the default (all twelve strategies) avoids it entirely.
+
+## Input contract
+
+Objects are looked up **by name** in the calling environment:
+
+| Object | Content |
+| --- | --- |
+| `<id>` | expression matrix, genes × samples, log2 scale, unique gene symbols |
+| `<id>_G` (Diff) | data frame with `Tag` and `group` |
+| `<id>_V` (Cor) | data frame with `Tag` and `value` |
+
+`Tag` must match `colnames(<id>)` — same values in the same order. Gene sets are
+supplied as a `GeneSetCollection`, for example `GSEABase::getGmt("sets.gmt")`.
 
 ## Bundled example data
 
-| Object | Dimensions | Description |
+| Object | Dimensions | Content |
 | --- | --- | --- |
-| `diffGSE33113`, `diffGSE35896`, `diffGSE13067` | 21502 genes x 80 / 54 / 58 samples | log2 expression, colorectal cancer |
-| `<id>_G` | samples x 2 (`Tag`, `group`) | CMS2 or Other |
-| `corGSE33113`, `corGSE35896`, `corGSE13067` | 21502 genes x 90 / 62 / 74 samples | log2 expression, colorectal cancer |
-| `<id>_V` | samples x 2 (`Tag`, `value`) | continuous score per sample |
-| `example_diffgroup` | 3 x 5 | comparison table for the three diff datasets |
-| `example_geneset` | `GeneSetCollection` of 10 | signatures screened in the examples |
+| `diffGSE33113`, `diffGSE35896`, `diffGSE13067` | 21,502 genes × 80 / 54 / 58 samples | log2 expression, colorectal cancer |
+| `<id>_G` | samples × 2 | `Tag`, `group` (CMS2 vs Other) |
+| `corGSE33113`, `corGSE35896`, `corGSE13067` | 21,502 genes × 90 / 62 / 74 samples | log2 expression, colorectal cancer |
+| `<id>_V` | samples × 2 | `Tag`, `value` |
+| `example_diffgroup` | 3 × 5 | comparison table |
+| `example_geneset` | `GeneSetCollection` of 10 | Wnt signatures |
 
-The three cohorts are public GEO series (GSE13067, GSE33113, GSE35896).
+The three cohorts are public GEO series (GSE13067, GSE33113, GSE35896). See
+`?MetaScreener-data` for details.
 
 ## Citation
 
-Zhao D, Zhao G, Yao M, Wu J, Fang Z. MetaScreener: a robust dual-mode framework
-for directional prioritization of actionable signatures through multi-dataset
-and multi-approach integration. *J Transl Med*. 2026;24(1):583.
-doi:10.1186/s12967-026-08019-y. PMID: 41845481.
+If MetaScreener contributes to your work, please cite:
+
+> Zhao D, Zhao G, Yao M, Wu J, Fang Z. MetaScreener: a robust dual-mode framework
+> for directional prioritization of actionable signatures through multi-dataset
+> and multi-approach integration. *J Transl Med*. 2026;24(1):583.
+> doi:10.1186/s12967-026-08019-y. PMID: 41845481.
+
+```bibtex
+@article{zhao2026metascreener,
+  title   = {MetaScreener: a robust dual-mode framework for directional
+             prioritization of actionable signatures through multi-dataset
+             and multi-approach integration},
+  author  = {Zhao, D. and Zhao, G. and Yao, M. and Wu, J. and Fang, Z.},
+  journal = {Journal of Translational Medicine},
+  year    = {2026},
+  volume  = {24},
+  number  = {1},
+  pages   = {583},
+  doi     = {10.1186/s12967-026-08019-y}
+}
+```
+
+## Documentation
+
+- `?DiffMetaScreener`, `?CorMetaScreener` — argument reference and worked examples
+- `?MetaScreener-data` — the bundled cohorts
+- [TUTORIAL.md](TUTORIAL.md) — a ten-minute walkthrough for first-time users
+- [NEWS.md](NEWS.md) — release notes
 
 ## Contact
 
-Dingkang Zhao — <dingkang.22@intl.zju.edu.cn>
+Dingkang Zhao — <dingkang.25@intl.zju.edu.cn>
+
+Bug reports and feature requests:
+<https://github.com/FangZY-Lab/MetaScreener/issues>.
 
 ## License
 
-MIT. See `LICENSE`.
+MIT © Dingkang Zhao. See [LICENSE](LICENSE).

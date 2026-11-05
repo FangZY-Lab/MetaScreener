@@ -89,8 +89,33 @@ CorMetaScreener(
 
 \item{p_combine_method}{The choice of method for integrating p-values.}
 }
+\value{
+A data frame with one row per gene set and three columns:
+\code{signatures}, the gene set name; \code{ADI}, the activation
+direction index; and \code{IDI}, the inhibition direction index.
+Both indices average the directional evidence over the requested
+\code{p_combine_method} strategies, so a larger value means stronger
+and more consistent evidence in that direction.
+}
 \description{
 CorMetaScreener: a multi-level meta-analysis framework robustly screens directional signatures based on correlation analyses.
+}
+\examples{
+\dontrun{
+data(example_geneset)
+data(list = c("corGSE33113", "corGSE33113_V",
+              "corGSE35896", "corGSE35896_V",
+              "corGSE13067", "corGSE13067_V"))
+
+res <- CorMetaScreener(
+  expression_accession_vector = c("corGSE33113", "corGSE35896", "corGSE13067"),
+  geneSets_gmt                = example_geneset,
+  enrichment_method           = c("zscore_pearson", "zscore_spearman"),
+  min.sz = 2,
+  max.sz = 10000
+)
+res
+}
 }
 \author{
 Dingkang Zhao

@@ -64,8 +64,35 @@ DiffMetaScreener(
 
 \item{p_combine_method}{The choice of method for integrating p-values.}
 }
+\value{
+A data frame with one row per gene set and three columns:
+\code{signatures}, the gene set name; \code{ADI}, the activation
+direction index; and \code{IDI}, the inhibition direction index.
+Both indices average the directional evidence over the requested
+\code{p_combine_method} strategies, so a larger value means stronger
+and more consistent evidence in that direction.
+}
 \description{
 DiffMetaScreener: a multi-level meta-analysis framework robustly screens directional signatures based on difference analyses.
+}
+\examples{
+\dontrun{
+data(example_geneset)
+data(example_diffgroup)
+data(list = c("diffGSE33113", "diffGSE33113_G",
+              "diffGSE35896", "diffGSE35896_G",
+              "diffGSE13067", "diffGSE13067_G"))
+
+res <- DiffMetaScreener(
+  expression_accession_vector = c("diffGSE33113", "diffGSE35896", "diffGSE13067"),
+  comparisons                 = example_diffgroup,
+  geneSets_gmt                = example_geneset,
+  enrichment_method           = c("zscore_t", "zscore_wilcoxon"),
+  min.sz = 2,
+  max.sz = 10000
+)
+res
+}
 }
 \author{
 Dingkang Zhao
