@@ -1,2 +1,7 @@
 ^MetaScreener\.Rproj$
 ^\.Rproj\.user$
+^\.github$
+^\.gitignore$
+^\.gitattributes$
+^LICENSE\.md$
+^README\.Rmd$

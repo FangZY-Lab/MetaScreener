@@ -1,223 +1,181 @@
-# MetaScreener: a robust dual-mode framework for directional prioritization of actionable signatures through multi-dataset and multi-approach integration
+# MetaScreener
 
-## Overview
+**Directional, multi-dataset screening of gene signatures.**
 
-MetaScreener is an R package that provides a comprehensive framework for screening directional gene signatures through multi-level meta-analysis. It integrates multiple enrichment methods with various statistical approaches to identify robust activation and inhibition patterns across multiple datasets.
+MetaScreener takes a set of gene signatures and asks a single question of each
+one: across many independent datasets and many enrichment methods, is the
+signature consistently *activated* or consistently *inhibited*? It answers with
+two scores per signature — an **Activation Direction Index (ADI)** and an
+**Inhibition Direction Index (IDI)** — rather than a single p-value that hides
+the direction of the effect.
 
-The package offers two complementary analysis modes:
+Two modes share the same engine:
 
-1. **DiffMetaScreener**: Based on differential expression analysis between groups
-2. **CorMetaScreener**: Based on correlation analysis with continuous variables
+| Mode | Input | Typical use |
+| --- | --- | --- |
+| `DiffMetaScreener()` | expression + a two-group annotation per dataset | case vs. control, subtype A vs. subtype B, high vs. low |
+| `CorMetaScreener()` | expression + a continuous variable per dataset | clinical score, drug sensitivity, pathway activity |
 
 ## Installation
 
+MetaScreener depends on several Bioconductor packages, and on `IOBR`, which is
+distributed through GitHub. Install those first:
+
 ```r
-# Clear environment and free memory
-rm(list=ls())
-gc()
-
-# Install BiocManager if not already installed
-if (!requireNamespace("BiocManager", quietly = TRUE))
+if (!requireNamespace("BiocManager", quietly = TRUE)) {
   install.packages("BiocManager")
-
-# Install required dependencies
-depens = c("singscore","UCell","decoupleR","AUCell","metap",
-           "fgsea","plyr","reshape2","GSEABase","GSVA","doBy",
-           "clusterProfiler","limma","dplyr","tidyverse","devtools","stringr",
-           "GSA","coin","viper","caret","wdm","correlation")
-
-# Install IOBR from GitHub
-devtools::install_github("IOBR/IOBR", force = T)
-
-# Install Bioconductor packages
-for(i in 1:length(depens)){
-  depen = depens[i]
-  if (!requireNamespace(depen, quietly = TRUE))
-    BiocManager::install(depen,update = FALSE)
 }
+install.packages("remotes")
 
-# Install MetaScreener
-devtools::install_github("FangZY-Lab/MetaScreener", force = T)
+# IOBR is not on CRAN or Bioconductor
+remotes::install_github("IOBR/IOBR")
 
-# Load the package
+BiocManager::install(c(
+  "GSVA", "GSEABase", "AUCell", "singscore", "UCell",
+  "decoupleR", "clusterProfiler", "limma", "fgsea"
+), update = FALSE)
+
+install.packages(c("metap", "doBy", "dplyr", "plyr", "reshape2"))
+```
+
+Then install the package itself:
+
+```r
+remotes::install_github("FangZY-Lab/MetaScreener")
 library(MetaScreener)
 ```
 
-## Data Preparation
+## Quick start
 
-### Required Data Formats
-
-#### For DiffMetaScreener:
-- **Expression data**: Data frames named with pattern `diff{GSEID}` containing gene expression matrices (genes as rows, samples as columns)
-- **Group information**: Data frames named with pattern `diff{GSEID}_G` containing sample grouping information
-- **Comparison file**: A data frame specifying group comparisons and their biological status
-
-#### For CorMetaScreener:
-- **Expression data**: Data frames named with pattern `cor{GSEID}` containing gene expression matrices
-- **Value data**: Data frames named with pattern `cor{GSEID}_V` containing continuous variables for correlation analysis
-
-### Example Data Loading
+The package ships with two complete example sets (three datasets each) and a
+ten-signature `GeneSetCollection`, so the workflow below runs as written.
 
 ```r
-# Set working directory to your data location
-setwd("path/to/your/data")
-# The sample data download site is: https://github.com/FangZY-Lab/MetaScreener/tree/main/data
-# Load DiffMetaScreener example data
-load("diffGSE33113.Rdata")
-load("diffGSE33113_G.Rdata")
-load("diffGSE35896.Rdata")
-load("diffGSE35896_G.Rdata")
-load("diffGSE13067.Rdata")
-load("diffGSE13067_G.Rdata")
-load("example_diffgroup.Rdata")
-load("example_geneset.Rdata")
+library(MetaScreener)
 
-# Load CorMetaScreener example data
-load("corGSE33113.Rdata")
-load("corGSE33113_V.Rdata")
-load("corGSE35896.Rdata")
-load("corGSE35896_V.Rdata")
-load("corGSE13067.Rdata")
-load("corGSE13067_V.Rdata")
+# signatures and the comparison table
+data("example_geneset")     # GeneSetCollection, 10 signatures
+data("example_diffgroup")   # which groups to compare in each dataset
+
+# Diff mode: three colorectal cohorts, CMS2 versus the rest
+data(list = c(
+  "diffGSE33113", "diffGSE33113_G",
+  "diffGSE35896", "diffGSE35896_G",
+  "diffGSE13067", "diffGSE13067_G"
+))
 ```
 
-## Usage Examples
+`data()` loads the objects into the global environment, which is where the
+screener looks for them.
 
-### Mode 1: DiffMetaScreener - Based on Differential Analysis
-
-This mode is designed for analyzing group comparisons (e.g., case vs. control, high vs. low expression) across multiple datasets.
+### Mode 1 — differential analysis
 
 ```r
-result_WNT_DiffMetaScreener <- DiffMetaScreener(
-  # Vector of dataset names (must match loaded objects)
+result_diff <- DiffMetaScreener(
   expression_accession_vector = c("diffGSE33113", "diffGSE35896", "diffGSE13067"),
-  
-  # Comparison file specifying group labels and biological status
-  comparisons = example_diffgroup,
-  
-  # Gene sets to be screened (as a GeneSetCollection object)
-  geneSets_gmt = example_geneset,
-  
-  # Enrichment methods to apply
-  enrichment_method = c(
-    "gsva_t", "gsva_limma", "gsva_wilcoxon",
-    "ssgsea_t", "ssgsea_limma", "ssgsea_wilcoxon",
-    "zscore_t", "zscore_limma", "zscore_wilcoxon"
-  ),
-  
-  # Minimum and maximum gene set sizes
+  comparisons                 = example_diffgroup,
+  geneSets_gmt                = example_geneset,
+  enrichment_method = c("gsva_t", "gsva_wilcoxon",
+                        "ssgsea_t", "ssgsea_wilcoxon",
+                        "zscore_t", "zscore_wilcoxon"),
   min.sz = 2,
   max.sz = 10000,
-  
-  # P-value combination methods
   p_combine_method = c("meanp", "meanz", "sumlog", "sumz", "sump")
 )
+
+head(result_diff)
 ```
 
-### Mode 2: CorMetaScreener - Based on Correlation Analysis
-
-This mode is designed for analyzing relationships between gene signatures and continuous variables (e.g., clinical scores, drug response) across multiple datasets.
+### Mode 2 — correlation analysis
 
 ```r
-result_WNT_CorMetaScreener <- CorMetaScreener(
-  # Vector of dataset names (must match loaded objects)
+data(list = c(
+  "corGSE33113", "corGSE33113_V",
+  "corGSE35896", "corGSE35896_V",
+  "corGSE13067", "corGSE13067_V"
+))
+
+result_cor <- CorMetaScreener(
   expression_accession_vector = c("corGSE33113", "corGSE35896", "corGSE13067"),
-  
-  # Gene sets to be screened
   geneSets_gmt = example_geneset,
-  
-  # Correlation-based enrichment methods
-  enrichment_method = c(
-    "gsva_pearson", "gsva_kendall", "gsva_spearman",
-    "ssgsea_pearson", "ssgsea_kendall", "ssgsea_spearman",
-    "zscore_pearson", "zscore_kendall", "zscore_spearman"
-  ),
-  
-  # Minimum and maximum gene set sizes
+  enrichment_method = c("gsva_pearson", "gsva_spearman",
+                        "ssgsea_pearson", "ssgsea_spearman",
+                        "zscore_pearson", "zscore_spearman"),
   min.sz = 2,
   max.sz = 10000,
-  
-  # P-value combination methods
   p_combine_method = c("meanp", "meanz", "sumlog", "sumz", "sump")
 )
+
+head(result_cor)
 ```
 
-## Key Features
+Both functions accept around a hundred `enrichment_method` values; the short
+lists above keep a first run quick. Run the full default set only when you are
+ready for a long job — every method is fitted in every dataset.
 
-### 1. **Multiple Enrichment Methods**
+## Input contract
 
-MetaScreener supports a wide range of gene set enrichment methods:
+The screener reads objects from the **global environment**, by name. For each
+entry in `expression_accession_vector` the following must exist:
 
-- **GSVA** (Gene Set Variation Analysis)
-- **ssGSEA** (single-sample GSEA)
-- **z-score** methods
-- **PLAGE** (Pathway Level Analysis of Gene Expression)
-- **PCA**-based methods
-- **AUCell** and **UCell**
-- **singscore**
-- **FGSEA** and **ORA** (Over-Representation Analysis)
-- **decoupleR** methods (consensus, MLM, UDT, ULM, VIPER, WMEAN, WSUM)
+| Object | Content |
+| --- | --- |
+| `<id>` | expression matrix, genes in rows, samples in columns, log2 scale |
+| `<id>_G` (Diff) | data frame with columns `Tag` (sample ID) and `group` |
+| `<id>_V` (Cor) | data frame with columns `Tag` (sample ID) and `value` |
 
-### 2. **Statistical Approaches**
+`Tag` must match `colnames(<id>)` exactly — same values, and the bundled data
+keeps the same order. Row names of the expression matrix must be gene symbols
+without duplicates, and the gene sets must use the same identifier type.
 
-Each enrichment method can be combined with various statistical tests:
+`comparisons` is a data frame with one row per dataset:
 
-- **For DiffMetaScreener**: t-test, limma, Wilcoxon test, ANOVA, permutation test, Kruskal-Wallis
-- **For CorMetaScreener**: Pearson, Kendall, Spearman correlation, linear regression, biweight, distance correlation, and other robust correlation methods
+| Accession | Group1 | Group2 | Group1_Status | Group2_Status |
+| --- | --- | --- | --- | --- |
+| diffGSE33113 | CMS2 | Other | activation | inhibition |
 
-### 3. **P-value Integration**
+`GeneSetCollection` objects can be read with `GSEABase::getGmt()` from a GMT
+file, which is the usual starting point for your own signatures.
 
-Multiple methods for combining p-values across datasets and methods:
+## Output
 
-- Geometric mean
-- Inverse chi-square (invchisq)
-- Inverse t (invt)
-- Logit method (logitp)
-- Cauchy combination test (cct)
-- Mean p-value (meanp)
-- Mean z-score (meanz)
-- Sum of logs (sumlog)
-- Sum of z-scores (sumz)
-- Sum of p-values (sump)
-- Vote counting (votep)
-- Wilkinson's method (wilkinsonp)
+Both functions return a data frame with one row per signature:
 
-### 4. **Output Metrics**
-
-The function returns two key metrics for each gene signature:
-
-- **ADI (Activation Direction Index)**: Measures the strength of evidence for signature activation
-- **IDI (Inhibition Direction Index)**: Measures the strength of evidence for signature inhibition
-
-## Output Format
-
-The result is a data frame with three columns:
-
-```r
-> head(result_WNT_DiffMetaScreener)
-    signatures       ADI        IDI
-1 WNT_signature1  2.345678  -1.234567
-2 WNT_signature2  1.876543  -0.987654
-3 ...            ...        ...
+```text
+  signatures        ADI        IDI
+1 WNT_signature1   2.345678  -1.234567
+2 WNT_signature2   1.876543  -0.987654
 ```
 
-- **signatures**: Names of the gene sets
-- **ADI**: Positive values indicate activation tendency
-- **IDI**: Negative values indicate inhibition tendency
+- `ADI` — evidence that the signature is activated (higher is stronger);
+- `IDI` — evidence that it is inhibited;
+- a large positive ADI with a small |IDI| means the signature behaves as an
+  activation signature across datasets and methods, and vice versa.
 
-Higher absolute values indicate stronger and more consistent directional signals across datasets and methods.
+## Bundled example data
+
+| Object | Dimensions | Description |
+| --- | --- | --- |
+| `diffGSE33113`, `diffGSE35896`, `diffGSE13067` | 21502 genes x 80 / 54 / 58 samples | log2 expression, colorectal cancer |
+| `<id>_G` | samples x 2 (`Tag`, `group`) | CMS2 or Other |
+| `corGSE33113`, `corGSE35896`, `corGSE13067` | 21502 genes x 90 / 62 / 74 samples | log2 expression, colorectal cancer |
+| `<id>_V` | samples x 2 (`Tag`, `value`) | continuous score per sample |
+| `example_diffgroup` | 3 x 5 | comparison table for the three diff datasets |
+| `example_geneset` | `GeneSetCollection` of 10 | signatures screened in the examples |
+
+The three cohorts are public GEO series (GSE13067, GSE33113, GSE35896).
 
 ## Citation
 
-If you use MetaScreener in your research, please cite:
+Zhao D, Zhao G, Yao M, Wu J, Fang Z. MetaScreener: a robust dual-mode framework
+for directional prioritization of actionable signatures through multi-dataset
+and multi-approach integration. *J Transl Med*. 2026;24(1):583.
+doi:10.1186/s12967-026-08019-y. PMID: 41845481.
 
-Zhao D, Zhao G, Yao M, Wu J, Fang Z. MetaScreener: a robust dual-mode framework for directional prioritization of actionable signatures through multi-dataset and multi-approach integration. J Transl Med. 2026 Mar 17;24(1):583. doi: 10.1186/s12967-026-08019-y. PMID: 41845481.
+## Contact
 
-## Author
-
-Should you have any queries regarding installation or usage, please contact us by email. During spare moments, we can assist in calculating the directional scores for signatures.
-Dingkang Zhao (dingkang.25@intl.zju.edu.cn)
+Dingkang Zhao — <dingkang.22@intl.zju.edu.cn>
 
 ## License
 
-This package is distributed under the terms specified in the package description. This software package is licensed under the most permissive open-source licence, the core feature of which is to grant users the utmost freedom: it permits the use of the code for any purpose, including modification, the creation of derivative works, and closed-source commercial applications, and the code itself is not ‘contagious’. The sole mandatory obligation is to retain the original author’s copyright notice and disclaimer when distributing the work.
+MIT. See `LICENSE`.

@@ -1,14 +1,20 @@
 Package: MetaScreener
+Type: Package
 Title: A dual-mode framework that robustly and quantitatively screens directional gene sets through multi-dataset and multi-approach integration
-Version: 1.0.0.0
+Version: 1.0.1
 Authors@R: 
     person("Dingkang", "Zhao", , "dingkang.22@intl.zju.edu.cn", role = c("aut", "cre"))
-Description: A dual-mode screening framework called MetaScreener (DiffMetaScreener and CorMetaScreener), which can integrate multiple datasets and multiple enrichment analyses while quantifying both the activation signal directionality and inhibition signal directionality of gene sets.
-License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
-    license
+Description: A dual-mode screening framework called MetaScreener (DiffMetaScreener
+    and CorMetaScreener), which can integrate multiple datasets and multiple
+    enrichment analyses while quantifying both the activation signal
+    directionality and inhibition signal directionality of gene sets.
+License: MIT + file LICENSE
+URL: https://github.com/FangZY-Lab/MetaScreener
+BugReports: https://github.com/FangZY-Lab/MetaScreener/issues
 Encoding: UTF-8
-Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.2
+LazyData: true
+Depends:
+    R (>= 4.0)
 Imports: 
     AUCell,
     clusterProfiler,
@@ -25,3 +31,5 @@ Imports:
     reshape2,
     singscore,
     UCell
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.2
