@@ -69,8 +69,8 @@ DiffMetaScreener=function(expression_accession_vector,
   if (!is.character(expression_accession_vector) || !length(expression_accession_vector)) {
     stop("`expression_accession_vector` must be a non-empty character vector.", call. = FALSE)
   }
-  aux_suffix <- "_G"
-  absent <- expression_accession_vector[
+  aux_suffix = "_G"
+  absent = expression_accession_vector[
     !vapply(expression_accession_vector, function(x) exists(x, mode = "any"), logical(1)) |
     !vapply(paste0(expression_accession_vector, aux_suffix), function(x) exists(x, mode = "any"), logical(1))
   ]
@@ -80,7 +80,7 @@ DiffMetaScreener=function(expression_accession_vector,
          "`; load them with data() or load() first.", call. = FALSE)
   }
   invisible(lapply(expression_accession_vector, function(x) {
-    aux <- get(paste0(x, aux_suffix))
+    aux = get(paste0(x, aux_suffix))
     if (!all(c("Tag", "group") %in% names(aux))) {
       stop("`", x, aux_suffix, "` must have the columns ",
            "`Tag` and `group`.", call. = FALSE)
@@ -284,7 +284,7 @@ DiffMetaScreener=function(expression_accession_vector,
     result=as.data.frame(result)
     result$P.Value=as.numeric(result$P.Value)
     result$logFC=as.numeric(result$logFC)
-    return(result) 
+    return(result)
   }
   ##########################################################################Load wilcox-test function
   Get_wilcox_test=function(geneset=geneset,group=group){
@@ -423,7 +423,7 @@ DiffMetaScreener=function(expression_accession_vector,
       mean1=mean(mean1[, 1], na.rm = TRUE)
       mean2=mean(mean2[, 1], na.rm = TRUE)
       result=rbind(result, c(GS[n],mean1,mean2,P.Value))
-      
+
     }
     result=data.frame(result)
     names(result)=c('geneset_id',"mean1","mean2",'P.Value')
@@ -1400,8 +1400,8 @@ DiffMetaScreener=function(expression_accession_vector,
           alldiff=alldiff[order(alldiff$id,decreasing = T),]
           id=alldiff$id
           names(id)=alldiff$geneset_id
-          canonical_pathways=do.call(rbind, lapply(geneSets, function(gs) {  
-            data.frame(term = gs@setName, gene = gs@geneIds, stringsAsFactors = FALSE)  
+          canonical_pathways=do.call(rbind, lapply(geneSets, function(gs) {
+            data.frame(term = gs@setName, gene = gs@geneIds, stringsAsFactors = FALSE)
           }))
           canonical_pathways=canonical_pathways[canonical_pathways$gene != "", ]
           canonical_pathways$term=as.character(canonical_pathways$term)
@@ -1431,14 +1431,14 @@ DiffMetaScreener=function(expression_accession_vector,
           print("t_ora will start.")
           result_UP=all_diff[all_diff$logFC>=0,]
           result_DN=all_diff[all_diff$logFC<0,]
-          result_UP=result_UP[order(result_UP$P.Value, -result_UP$logFC), ] 
+          result_UP=result_UP[order(result_UP$P.Value, -result_UP$logFC), ]
           result_DN=result_DN[order(result_DN$P.Value, result_DN$logFC), ]
           upregulated_gene_sets=head(result_UP,min(1000, nrow(result_UP)))
           downregulated_gene_sets=head(result_DN,min(1000, nrow(result_DN)))
           gene_H=upregulated_gene_sets$geneset_id
           gene_L=downregulated_gene_sets$geneset_id
-          canonical_pathways=do.call(rbind, lapply(geneSets, function(gs) {  
-            data.frame(term = gs@setName, gene = gs@geneIds, stringsAsFactors = FALSE)  
+          canonical_pathways=do.call(rbind, lapply(geneSets, function(gs) {
+            data.frame(term = gs@setName, gene = gs@geneIds, stringsAsFactors = FALSE)
           }))
           canonical_pathways=canonical_pathways[canonical_pathways$gene != "", ]
           enrich_H=enricher(gene_H, TERM2GENE = canonical_pathways,minGSSize=min.sz,maxGSSize=max.sz,
@@ -1474,8 +1474,8 @@ DiffMetaScreener=function(expression_accession_vector,
           alldiff=alldiff[order(alldiff$id,decreasing = T),]
           id=alldiff$id
           names(id)=alldiff$geneset_id
-          canonical_pathways=do.call(rbind, lapply(geneSets, function(gs) {  
-            data.frame(term = gs@setName, gene = gs@geneIds, stringsAsFactors = FALSE)  
+          canonical_pathways=do.call(rbind, lapply(geneSets, function(gs) {
+            data.frame(term = gs@setName, gene = gs@geneIds, stringsAsFactors = FALSE)
           }))
           canonical_pathways=canonical_pathways[canonical_pathways$gene != "", ]
           canonical_pathways$term=as.character(canonical_pathways$term)
@@ -1505,14 +1505,14 @@ DiffMetaScreener=function(expression_accession_vector,
           print("limma_ora will start.")
           result_UP=all_diff[all_diff$logFC>=0,]
           result_DN=all_diff[all_diff$logFC<0,]
-          result_UP=result_UP[order(result_UP$P.Value, -result_UP$logFC), ] 
+          result_UP=result_UP[order(result_UP$P.Value, -result_UP$logFC), ]
           result_DN=result_DN[order(result_DN$P.Value, result_DN$logFC), ]
           upregulated_gene_sets=head(result_UP,min(1000, nrow(result_UP)))
           downregulated_gene_sets=head(result_DN,min(1000, nrow(result_DN)))
           gene_H=rownames(upregulated_gene_sets)
           gene_L=rownames(downregulated_gene_sets)
-          canonical_pathways=do.call(rbind, lapply(geneSets, function(gs) {  
-            data.frame(term = gs@setName, gene = gs@geneIds, stringsAsFactors = FALSE)  
+          canonical_pathways=do.call(rbind, lapply(geneSets, function(gs) {
+            data.frame(term = gs@setName, gene = gs@geneIds, stringsAsFactors = FALSE)
           }))
           canonical_pathways=canonical_pathways[canonical_pathways$gene != "", ]
           enrich_H=enricher(gene_H, TERM2GENE=canonical_pathways,minGSSize = min.sz,maxGSSize=max.sz,
@@ -1548,8 +1548,8 @@ DiffMetaScreener=function(expression_accession_vector,
           alldiff=alldiff[order(alldiff$id,decreasing = T),]
           id=alldiff$id
           names(id)=alldiff$geneset_id
-          canonical_pathways=do.call(rbind, lapply(geneSets, function(gs) {  
-            data.frame(term = gs@setName, gene = gs@geneIds, stringsAsFactors = FALSE)  
+          canonical_pathways=do.call(rbind, lapply(geneSets, function(gs) {
+            data.frame(term = gs@setName, gene = gs@geneIds, stringsAsFactors = FALSE)
           }))
           canonical_pathways=canonical_pathways[canonical_pathways$gene != "", ]
           canonical_pathways$term=as.character(canonical_pathways$term)
@@ -1579,14 +1579,14 @@ DiffMetaScreener=function(expression_accession_vector,
           print("anova_ora will start.")
           result_UP=all_diff[all_diff$logFC>=0,]
           result_DN=all_diff[all_diff$logFC<0,]
-          result_UP=result_UP[order(result_UP$P.Value, -result_UP$logFC), ] 
+          result_UP=result_UP[order(result_UP$P.Value, -result_UP$logFC), ]
           result_DN=result_DN[order(result_DN$P.Value, result_DN$logFC), ]
           upregulated_gene_sets=head(result_UP,min(1000, nrow(result_UP)))
           downregulated_gene_sets=head(result_DN,min(1000, nrow(result_DN)))
           gene_H=upregulated_gene_sets$geneset_id
           gene_L=downregulated_gene_sets$geneset_id
-          canonical_pathways=do.call(rbind, lapply(geneSets, function(gs) {  
-            data.frame(term = gs@setName, gene = gs@geneIds, stringsAsFactors = FALSE)  
+          canonical_pathways=do.call(rbind, lapply(geneSets, function(gs) {
+            data.frame(term = gs@setName, gene = gs@geneIds, stringsAsFactors = FALSE)
           }))
           canonical_pathways=canonical_pathways[canonical_pathways$gene != "", ]
           enrich_H=enricher(gene_H, TERM2GENE = canonical_pathways,minGSSize=min.sz,maxGSSize=max.sz,
@@ -1622,8 +1622,8 @@ DiffMetaScreener=function(expression_accession_vector,
           alldiff=alldiff[order(alldiff$id,decreasing = T),]
           id=alldiff$id
           names(id)=alldiff$geneset_id
-          canonical_pathways=do.call(rbind, lapply(geneSets, function(gs) {  
-            data.frame(term = gs@setName, gene = gs@geneIds, stringsAsFactors = FALSE)  
+          canonical_pathways=do.call(rbind, lapply(geneSets, function(gs) {
+            data.frame(term = gs@setName, gene = gs@geneIds, stringsAsFactors = FALSE)
           }))
           canonical_pathways=canonical_pathways[canonical_pathways$gene != "", ]
           canonical_pathways$term=as.character(canonical_pathways$term)
@@ -1653,14 +1653,14 @@ DiffMetaScreener=function(expression_accession_vector,
           print("wilcoxon_ora will start.")
           result_UP=all_diff[all_diff$logFC>=0,]
           result_DN=all_diff[all_diff$logFC<0,]
-          result_UP=result_UP[order(result_UP$P.Value, -result_UP$logFC), ] 
+          result_UP=result_UP[order(result_UP$P.Value, -result_UP$logFC), ]
           result_DN=result_DN[order(result_DN$P.Value, result_DN$logFC), ]
           upregulated_gene_sets=head(result_UP,min(1000, nrow(result_UP)))
           downregulated_gene_sets=head(result_DN,min(1000, nrow(result_DN)))
           gene_H=upregulated_gene_sets$geneset_id
           gene_L=downregulated_gene_sets$geneset_id
-          canonical_pathways=do.call(rbind, lapply(geneSets, function(gs) {  
-            data.frame(term = gs@setName, gene = gs@geneIds, stringsAsFactors = FALSE)  
+          canonical_pathways=do.call(rbind, lapply(geneSets, function(gs) {
+            data.frame(term = gs@setName, gene = gs@geneIds, stringsAsFactors = FALSE)
           }))
           canonical_pathways=canonical_pathways[canonical_pathways$gene != "", ]
           enrich_H=enricher(gene_H, TERM2GENE = canonical_pathways,minGSSize=min.sz,maxGSSize=max.sz,
@@ -1696,8 +1696,8 @@ DiffMetaScreener=function(expression_accession_vector,
           alldiff=alldiff[order(alldiff$id,decreasing = T),]
           id=alldiff$id
           names(id)=alldiff$geneset_id
-          canonical_pathways=do.call(rbind, lapply(geneSets, function(gs) {  
-            data.frame(term = gs@setName, gene = gs@geneIds, stringsAsFactors = FALSE)  
+          canonical_pathways=do.call(rbind, lapply(geneSets, function(gs) {
+            data.frame(term = gs@setName, gene = gs@geneIds, stringsAsFactors = FALSE)
           }))
           canonical_pathways=canonical_pathways[canonical_pathways$gene != "", ]
           canonical_pathways$term=as.character(canonical_pathways$term)
@@ -1727,14 +1727,14 @@ DiffMetaScreener=function(expression_accession_vector,
           print("permutation_ora will start.")
           result_UP=all_diff[all_diff$logFC>=0,]
           result_DN=all_diff[all_diff$logFC<0,]
-          result_UP=result_UP[order(result_UP$P.Value, -result_UP$logFC), ] 
+          result_UP=result_UP[order(result_UP$P.Value, -result_UP$logFC), ]
           result_DN=result_DN[order(result_DN$P.Value, result_DN$logFC), ]
           upregulated_gene_sets=head(result_UP,min(1000, nrow(result_UP)))
           downregulated_gene_sets=head(result_DN,min(1000, nrow(result_DN)))
           gene_H=upregulated_gene_sets$geneset_id
           gene_L=downregulated_gene_sets$geneset_id
-          canonical_pathways=do.call(rbind, lapply(geneSets, function(gs) {  
-            data.frame(term = gs@setName, gene = gs@geneIds, stringsAsFactors = FALSE)  
+          canonical_pathways=do.call(rbind, lapply(geneSets, function(gs) {
+            data.frame(term = gs@setName, gene = gs@geneIds, stringsAsFactors = FALSE)
           }))
           canonical_pathways=canonical_pathways[canonical_pathways$gene != "", ]
           enrich_H=enricher(gene_H, TERM2GENE = canonical_pathways,minGSSize=min.sz,maxGSSize=max.sz,
@@ -1770,8 +1770,8 @@ DiffMetaScreener=function(expression_accession_vector,
           alldiff=alldiff[order(alldiff$id,decreasing = T),]
           id=alldiff$id
           names(id)=alldiff$geneset_id
-          canonical_pathways=do.call(rbind, lapply(geneSets, function(gs) {  
-            data.frame(term = gs@setName, gene = gs@geneIds, stringsAsFactors = FALSE)  
+          canonical_pathways=do.call(rbind, lapply(geneSets, function(gs) {
+            data.frame(term = gs@setName, gene = gs@geneIds, stringsAsFactors = FALSE)
           }))
           canonical_pathways=canonical_pathways[canonical_pathways$gene != "", ]
           canonical_pathways$term=as.character(canonical_pathways$term)
@@ -1801,14 +1801,14 @@ DiffMetaScreener=function(expression_accession_vector,
           print("kruskal_ora will start.")
           result_UP=all_diff[all_diff$logFC>=0,]
           result_DN=all_diff[all_diff$logFC<0,]
-          result_UP=result_UP[order(result_UP$P.Value, -result_UP$logFC), ] 
+          result_UP=result_UP[order(result_UP$P.Value, -result_UP$logFC), ]
           result_DN=result_DN[order(result_DN$P.Value, result_DN$logFC), ]
           upregulated_gene_sets=head(result_UP,min(1000, nrow(result_UP)))
           downregulated_gene_sets=head(result_DN,min(1000, nrow(result_DN)))
           gene_H=upregulated_gene_sets$geneset_id
           gene_L=downregulated_gene_sets$geneset_id
-          canonical_pathways=do.call(rbind, lapply(geneSets, function(gs) {  
-            data.frame(term = gs@setName, gene = gs@geneIds, stringsAsFactors = FALSE)  
+          canonical_pathways=do.call(rbind, lapply(geneSets, function(gs) {
+            data.frame(term = gs@setName, gene = gs@geneIds, stringsAsFactors = FALSE)
           }))
           canonical_pathways=canonical_pathways[canonical_pathways$gene != "", ]
           enrich_H=enricher(gene_H, TERM2GENE = canonical_pathways,minGSSize=min.sz,maxGSSize=max.sz,
@@ -3529,7 +3529,7 @@ DiffMetaScreener=function(expression_accession_vector,
     new_signatures=setdiff(label_genesets, final_res$signatures)
     if (length(new_signatures) > 0) {
       new_rows=data.frame(signatures = new_signatures, ADI = rep(0, length(new_signatures)), IDI = rep(0, length(new_signatures)))
-      final_res=rbind(final_res, new_rows)  
+      final_res=rbind(final_res, new_rows)
     }
   }
   return(final_res)

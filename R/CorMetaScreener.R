@@ -65,8 +65,8 @@ CorMetaScreener=function(expression_accession_vector,
   if (!is.character(expression_accession_vector) || !length(expression_accession_vector)) {
     stop("`expression_accession_vector` must be a non-empty character vector.", call. = FALSE)
   }
-  aux_suffix <- "_V"
-  absent <- expression_accession_vector[
+  aux_suffix = "_V"
+  absent = expression_accession_vector[
     !vapply(expression_accession_vector, function(x) exists(x, mode = "any"), logical(1)) |
     !vapply(paste0(expression_accession_vector, aux_suffix), function(x) exists(x, mode = "any"), logical(1))
   ]
@@ -76,7 +76,7 @@ CorMetaScreener=function(expression_accession_vector,
          "`; load them with data() or load() first.", call. = FALSE)
   }
   invisible(lapply(expression_accession_vector, function(x) {
-    aux <- get(paste0(x, aux_suffix))
+    aux = get(paste0(x, aux_suffix))
     if (!all(c("Tag", "value") %in% names(aux))) {
       stop("`", x, aux_suffix, "` must have the columns ",
            "`Tag` and `value`.", call. = FALSE)
