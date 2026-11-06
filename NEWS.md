@@ -1,5 +1,29 @@
 # MetaScreener 1.1.0
 
+## Package checks
+
+`R CMD check` (R 4.3.2, `--no-manual --no-build-vignettes`) reports two warnings
+and two notes. Each one is known and deliberate:
+
+* **`library()` calls in package code.** The two functions attach 23 packages at
+  run time, which is how the published analysis runs. Replacing those calls with
+  `::` would touch roughly four thousand call sites and could change the
+  numerical results, so the imports are declared in `DESCRIPTION` and the calls
+  are kept.
+* **Bundled `GeneSetCollection`.** `example_geneset` is an S4 object, and the
+  check that loads the datasets outside the package namespace cannot resolve its
+  class. Moving `GSEABase` to `Depends` silences it but makes the installation
+  step emit S4 warnings instead, so it stays in `Imports`; `data()` works as
+  documented.
+* **Installed size 59.4 MB**, almost all of it the example expression matrices.
+* **A few unqualified `stats` and `metap` calls** that `codetools` cannot resolve
+  statically. They resolve at run time because both packages are attached.
+
+`LazyDataCompression: xz` was added, which removes the "LazyData DB without
+compression" warning and shrinks the installed package from 64.6 MB to 59.4 MB.
+Both modes were re-run before and after the change and return bit-identical ADI
+and IDI values.
+
 ## Examples for both modes
 
 Every entry point now documents `DiffMetaScreener()` and `CorMetaScreener()`:
