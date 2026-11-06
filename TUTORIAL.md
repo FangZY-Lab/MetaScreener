@@ -176,7 +176,55 @@ res[order(res$IDI), ]                     # strongest inhibition evidence
 
 ---
 
-## Step 5 — Screen your own data
+## Step 5 — Run the correlation mode
+
+`CorMetaScreener()` answers a different question. Instead of two labelled groups
+it takes a **continuous state variable** per sample — a pathway activity score, a
+clinical measurement, a drug sensitivity value — and asks whether a signature's
+activity tracks it. The bundled `cor` objects carry such a variable in their
+`_V` tables.
+
+```r
+data(list = c("corGSE33113", "corGSE33113_V",
+              "corGSE35896", "corGSE35896_V",
+              "corGSE13067", "corGSE13067_V"))
+
+res_cor <- CorMetaScreener(
+  expression_accession_vector = c("corGSE33113", "corGSE35896", "corGSE13067"),
+  geneSets_gmt                = example_geneset,
+  enrichment_method           = c("zscore_pearson", "zscore_spearman"),
+  min.sz = 2,
+  max.sz = 10000
+)
+
+res_cor$DI <- res_cor$ADI + res_cor$IDI
+res_cor[order(-res_cor$DI), ]
+```
+
+```text
+   signatures               ADI            IDI             DI
+1  HALLMARK_WNT    16.710592822  -2.774547e-05   16.710565077
+2  WP_WNT          13.928138294  -1.593803e-03   13.926544491
+3  FLIER_WNT       12.749898469  -6.007688e-08   12.749898409
+4  BIOCARTA_WNT     5.796530160  -4.734137e-03    5.791796022
+5  REACTOME_WNT     5.579781384  -1.292526e-01    5.450528833
+6  KEGG_WNT         4.844878924  -3.839505e-02    4.806483874
+7  FEVR_WNT_UP      1.638466082  -7.592722e-02    1.562538860
+8  GOBP_WNT         0.736208787  -1.711992e-01    0.565009617
+9  PID_WNT          1.258082003  -3.555518e+00   -2.297436086
+10 FEVR_WNT_DN      0.003118185  -1.146383e+01  -11.460715153
+```
+
+Two things are worth noticing:
+
+- the output has exactly the same three columns as the differential run, so
+  everything in Step 4 applies unchanged;
+- the ranking is not the same. `HALLMARK_WNT` and `WP_WNT` lead here, `FLIER_WNT`
+  led the differential screen, and `FEVR_WNT_DN` is inhibited under both. That is
+  expected: the two modes test different hypotheses on the same signatures, and
+  reporting both is stronger than reporting either alone.
+
+## Step 6 — Screen your own data
 
 You need one expression matrix and one annotation table per dataset. Everything
 is matched by sample ID, so the annotation table must have a `Tag` column whose
@@ -238,7 +286,7 @@ my_sets <- GSEABase::getGmt("my_signatures.gmt")
 
 ---
 
-## Step 6 — Choose your methods
+## Step 7 — Choose your methods
 
 Two arguments control the work:
 
@@ -272,7 +320,7 @@ geometric mean. Leave this at the default (all twelve).
 
 ---
 
-## Step 7 — Scale up
+## Step 8 — Scale up
 
 The full default set of methods is large. A practical progression:
 

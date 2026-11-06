@@ -1,5 +1,24 @@
 # MetaScreener 1.1.0
 
+## Examples for both modes
+
+Every entry point now documents `DiffMetaScreener()` and `CorMetaScreener()`:
+
+* `demo/diff_mode.R` and `demo/cor_mode.R`, runnable with
+  `demo("diff_mode", package = "MetaScreener")` and
+  `demo("cor_mode", package = "MetaScreener")`, each ending in the ranked
+  ADI/IDI/DI table.
+* The README quick start has a Mode 1 and a Mode 2 block, both with the output
+  they produce on the bundled data.
+* `TUTORIAL.md` gained a dedicated step for the correlative mode (Step 5); the
+  differential mode is Step 3.
+* The two `?` pages keep one worked example each.
+
+The two modes rank the bundled Wnt signatures differently — `FLIER_WNT` leads
+the differential screen, `HALLMARK_WNT` the correlative one, while
+`FEVR_WNT_DN` is inhibited under both — which is the intended consequence of
+testing different hypotheses, and is now stated explicitly in the docs.
+
 ## New documentation
 
 * `man/figures/MetaScreener-workflow.svg` — a schematic of the eight-stage

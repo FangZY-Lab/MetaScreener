@@ -110,8 +110,11 @@ dependency stack. New to the package? Start with the
 
 ## Quick start
 
-A reduced run — two of the 23 enrichment methods — that finishes in about
-twenty seconds and shows the shape of the output:
+Both modes run on the bundled data. The examples below use two of the 23
+enrichment methods — about twenty seconds each — so you can see the shape of the
+output before committing to a full run.
+
+### Mode 1 — `DiffMetaScreener()`: two-group phenotype
 
 ```r
 library(MetaScreener)
@@ -152,8 +155,48 @@ res[order(-res$DI), ]
 `FLIER_WNT` carries activation evidence across all three cohorts, `FEVR_WNT_DN`
 is a pure inhibition signature, and `GOBP_WNT` / `PID_WNT` carry both activation
 and inhibition evidence with inhibition dominating, which is what the negative
-`DI` reports. Run the full 23-method set for a result comparable to the
-publication.
+`DI` reports.
+
+### Mode 2 — `CorMetaScreener()`: continuous state variable
+
+```r
+data(list = c("corGSE33113", "corGSE33113_V",
+              "corGSE35896", "corGSE35896_V",
+              "corGSE13067", "corGSE13067_V"))
+
+res_cor <- CorMetaScreener(
+  expression_accession_vector = c("corGSE33113", "corGSE35896", "corGSE13067"),
+  geneSets_gmt                = example_geneset,
+  enrichment_method           = c("zscore_pearson", "zscore_spearman"),
+  min.sz = 2,
+  max.sz = 10000
+)
+
+res_cor$DI <- res_cor$ADI + res_cor$IDI
+res_cor[order(-res_cor$DI), ]
+```
+
+```text
+   signatures               ADI            IDI             DI
+1  HALLMARK_WNT    16.710592822  -2.774547e-05   16.710565077
+2  WP_WNT          13.928138294  -1.593803e-03   13.926544491
+3  FLIER_WNT       12.749898469  -6.007688e-08   12.749898409
+4  BIOCARTA_WNT     5.796530160  -4.734137e-03    5.791796022
+5  REACTOME_WNT     5.579781384  -1.292526e-01    5.450528833
+6  KEGG_WNT         4.844878924  -3.839505e-02    4.806483874
+7  FEVR_WNT_UP      1.638466082  -7.592722e-02    1.562538860
+8  GOBP_WNT         0.736208787  -1.711992e-01    0.565009617
+9  PID_WNT          1.258082003  -3.555518e+00   -2.297436086
+10 FEVR_WNT_DN      0.003118185  -1.146383e+01  -11.460715153
+```
+
+The ranking is deliberately not the same as in Mode 1: `HALLMARK_WNT` and
+`WP_WNT` lead here, while `FLIER_WNT` led the differential screen. The two modes
+answer different questions — whether a signature separates two labelled groups,
+versus whether it tracks a continuous state variable. `FEVR_WNT_DN` is the one
+signature that is inhibited under both.
+
+Run the full 23-method set for a result comparable to the publication.
 
 ## Input contract
 
@@ -216,10 +259,16 @@ If MetaScreener contributes to your work, please cite:
 
 ## Documentation
 
-- `?DiffMetaScreener`, `?CorMetaScreener` — argument reference and worked examples
-- `?MetaScreener-data` — the bundled cohorts
-- [TUTORIAL.md](TUTORIAL.md) — a ten-minute walkthrough for first-time users
-- [NEWS.md](NEWS.md) — release notes
+Every example exists for both modes.
+
+| Resource | Covers |
+| --- | --- |
+| `?DiffMetaScreener`, `?CorMetaScreener` | argument reference and a worked example per mode |
+| `demo("diff_mode", package = "MetaScreener")` | runnable end-to-end differential screen |
+| `demo("cor_mode", package = "MetaScreener")` | runnable end-to-end correlative screen |
+| [TUTORIAL.md](TUTORIAL.md) | ten-minute walkthrough: Step 3 runs the differential mode, Step 5 the correlative one |
+| `?MetaScreener-data` | the bundled cohorts |
+| [NEWS.md](NEWS.md) | release notes |
 
 ## Contact
 

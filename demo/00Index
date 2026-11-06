@@ -1,0 +1,2 @@
+diff_mode    Directional screening against a two-group phenotype (DiffMetaScreener)
+cor_mode     Directional screening against a continuous state variable (CorMetaScreener)
